@@ -4,7 +4,7 @@ import type { InitInput, InitOutput } from "@/app/pkg/fibonacci";
 import init from "@/app/pkg/fibonacci";
 
 const WebAssembly = {
-  fibonacci: null as ((n: number) => number) | null,
+  fibonacci: null as ((n: bigint) => bigint) | null,
   init: async (input?: InitInput): Promise<void> => {
     const wasm: InitOutput = await init(input);
     WebAssembly.fibonacci = wasm.fibonacci;
@@ -12,8 +12,8 @@ const WebAssembly = {
 };
 
 export default function Fibonacci() {
-  const [result, setResult] = useState<number | null>(null);
-  const [fibonacciInput, setFibonacciInput] = useState<number | null>(null);
+  const [result, setResult] = useState<bigint | null>(null);
+  const [fibonacciInput, setFibonacciInput] = useState<bigint | null>(null);
 
   useEffect(() => {
     async function loadWasm() {
@@ -24,7 +24,7 @@ export default function Fibonacci() {
     loadWasm();
   }, []);
 
-  const handleFibonacciCalculation = (value: number) => {
+  const handleFibonacciCalculation = (value: bigint) => {
     if (WebAssembly.fibonacci) {
       const computedResult = WebAssembly.fibonacci(value);
       setResult(computedResult);
@@ -40,14 +40,14 @@ export default function Fibonacci() {
       <div className="grid sm:grid-cols-2 sm:gap-x-6 gap-y-4 sm:gap-y-0">
         <input
           type="number"
-          onChange={(e) => setFibonacciInput(parseInt(e.currentTarget.value))}
+          onChange={(e) => setFibonacciInput(BigInt(e.currentTarget.value))}
           className="w-full px-4 py-2 bg-indigo-100 focus:bg-indigo-50 text-indigo-950 border rounded-md focus:ring-2 focus:ring-indigo-500"
         />
         <button
           type="button"
           className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 sm:w-1/2"
           onClick={() =>
-            typeof fibonacciInput === "number"
+            typeof fibonacciInput === "bigint"
               ? handleFibonacciCalculation(fibonacciInput)
               : null
           }
@@ -55,8 +55,8 @@ export default function Fibonacci() {
           Get result
         </button>
         <p className="mt-4">
-          <span className="text-4xl font-semibold tracking-tight text-white">
-            {typeof result === "number" ? result.toLocaleString() : null}
+          <span className="text-4xl font-semibold tracking-tight text-indigo-950 dark:text-white">
+            {typeof result === "bigint" ? result.toLocaleString() : null}
           </span>
         </p>
       </div>
